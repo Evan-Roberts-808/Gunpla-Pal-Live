@@ -5,6 +5,7 @@ import os
 import ipdb
 import json
 
+
 def create_backup():
     gunpla_list = []
 
@@ -49,16 +50,18 @@ def restore_backup(filename):
 
     db.session.commit()
 
+
 def delete_entry():
     entry = Comment.query.filter_by(id=2).first()
     db.session.delete(entry)
     db.session.commit()
 
+
 if __name__ == "__main__":
     with app.app_context():
-        delete_entry()
+        # delete_entry()
         # create_backup()
         # view_pickle_structure('gunpla_backup.pkl')
-        # restore_backup('gunpla_backup.pkl')
+        restore_backup('data_backup/gunpla_backup.pkl')
         # ipdb.set_trace()
         pass
