@@ -5,17 +5,6 @@ import os
 import ipdb
 import json
 
-
-def clear_tables():
-    # db.session.query(Gunpla).delete()
-    db.session.query(Collection).delete()
-    db.session.query(Theme).delete()
-    db.session.query(User).delete()
-    db.session.query(Wishlist).delete()
-    db.session.query(Comment).delete()
-    db.session.commit()
-
-
 def create_backup():
     gunpla_list = []
 
@@ -60,12 +49,16 @@ def restore_backup(filename):
 
     db.session.commit()
 
+def delete_entry():
+    entry = Comment.query.filter_by(id=2).first()
+    db.session.delete(entry)
+    db.session.commit()
 
 if __name__ == "__main__":
     with app.app_context():
+        delete_entry()
         # create_backup()
         # view_pickle_structure('gunpla_backup.pkl')
-        # clear_tables()
         # restore_backup('gunpla_backup.pkl')
         # ipdb.set_trace()
         pass
