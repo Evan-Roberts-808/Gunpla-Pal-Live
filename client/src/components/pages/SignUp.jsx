@@ -41,7 +41,7 @@ const Signup = ({ updateUser }) => {
       profile_pic: profilePic,
     };
 
-    fetch("/api/signup", {
+    fetch("/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

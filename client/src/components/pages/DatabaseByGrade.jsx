@@ -59,7 +59,7 @@ const DatabaseByGrade = () => {
   );
 
   useEffect(() => {
-    fetch(`/api/gunplas/${grade}`)
+    fetch(`/gunplas/${grade}`)
       .then((response) => response.json())
       .then((data) => setGunplas(data))
       .catch((error) => {
@@ -68,7 +68,7 @@ const DatabaseByGrade = () => {
   }, [grade]);
 
   const addToCollection = (gunpla_id) => {
-    fetch("/api/collections/add", {
+    fetch("/collections/add", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -88,7 +88,7 @@ const DatabaseByGrade = () => {
   };
 
   const addToWishlist = (gunpla_id) => {
-    fetch("/api/wishlist/add", {
+    fetch("/wishlist/add", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

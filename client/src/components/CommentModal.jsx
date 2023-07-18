@@ -14,7 +14,7 @@ const CommentModal = ({ showModal, onCloseModal, selectedGunpla }) => {
   console.log(comments);
 
   useEffect(() => {
-    fetch(`/api/comments/${selectedGunpla.id}`)
+    fetch(`/comments/${selectedGunpla.id}`)
       .then((response) => response.json())
       .then((data) => {
         setComments(data.comments);
@@ -41,7 +41,7 @@ const CommentModal = ({ showModal, onCloseModal, selectedGunpla }) => {
       gunpla_id: selectedGunpla.id,
     };
 
-    fetch(`/api/comments/add`, {
+    fetch(`/comments/add`, {
       method: "POST",
       headers: { "Content-type": "application/json" },
       body: JSON.stringify(commentData),

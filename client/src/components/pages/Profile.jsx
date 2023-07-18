@@ -39,7 +39,7 @@ const Profile = () => {
 
   useEffect(() => {
     if (user) {
-      fetch(`/api/${user.username}/collections`)
+      fetch(`/${user.username}/collections`)
         .then((response) => response.json())
         .then((data) => {
           setUserCollection(data);
@@ -81,7 +81,7 @@ const Profile = () => {
 
   useEffect(() => {
     if (user) {
-      fetch(`/api/${user.username}/wishlists`)
+      fetch(`/${user.username}/wishlists`)
         .then((response) => response.json())
         .then((data) => {
           setUserWishlists(data);
@@ -95,7 +95,7 @@ const Profile = () => {
   };
 
   const handleCollectionDelete = (gunpla_id) => {
-    fetch("/api/collections/remove", {
+    fetch("/collections/remove", {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -113,7 +113,7 @@ const Profile = () => {
   };
 
   const handleMoveToWishlist = (gunpla_id) => {
-    fetch("/api/collections/move-to-wishlist", {
+    fetch("/collections/move-to-wishlist", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
