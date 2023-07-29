@@ -14,6 +14,7 @@ const DatabaseByGrade = () => {
   const gunplasPerRow = 6;
   const rowsPerPage = 4;
   const pageLimit = 2;
+  const [isLoading, setIsLoading] = useState(true);
 
   const showAlert = (message) => {
     setAlertMessage(message);
@@ -59,9 +60,13 @@ const DatabaseByGrade = () => {
   );
 
   useEffect(() => {
+    setIsLoading(true);
     fetch(`/gunplas/${grade}`)
       .then((response) => response.json())
-      .then((data) => setGunplas(data))
+      .then((data) => {
+        setGunplas(data)
+        setIsLoading(false)
+      })
       .catch((error) => {
         console.log(error);
       });
@@ -284,16 +289,23 @@ const DatabaseByGrade = () => {
     <Container>
     <h2>Gunpla Database - Grade: {grade}</h2>
     {searchBar}
-    {hasSearchResults ? (
-      <>
-        <div className="row justify-content-center model-row">
-          {gunplaDisplay}
-        </div>
-        {paginationComponent}
-      </>
-    ) : (
-      <p>{totalPages === 0 ? "No gunpla could be found." : "No search results found."}</p>
-    )}
+    {isLoading ? <p>Loading models...</p> : null}
+      {hasSearchResults ? (
+        <>
+          <div className="row justify-content-center model-row">
+            {gunplaDisplay}
+          </div>
+          {paginationComponent}
+        </>
+      ) : (
+        <p>
+          {totalPages === 0
+            ? "No gunpla could be found."
+            : isLoading
+            ? "Loading models..."
+            : "No search results found."}
+        </p>
+      )}
     <CommentModal
       selectedGunpla={selectedGunpla}
       showModal={showModal}
