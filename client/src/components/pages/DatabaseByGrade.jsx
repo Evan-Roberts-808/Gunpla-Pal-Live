@@ -152,17 +152,11 @@ const DatabaseByGrade = () => {
     setCurrentPage(pageNumber);
   };
 
-  const totalPages = Math.ceil(gunplas.length / gunplasPerPage);
-  const pageNumbers = [];
+  const hasSearchResults = searchedGunplas.length > 0;
+  const displayedGunplas = hasSearchResults ? searchedGunplas : gunplas;
 
-  if (totalPages <= 1) {
-    // No need to display pagination if there is only one page
-    return (
-      <Container>
-        <section className="row">{gunplaDisplay}</section>
-      </Container>
-    );
-  }
+  const totalPages = Math.ceil(displayedGunplas.length / gunplasPerPage);
+  const pageNumbers = [];
 
   if (currentPage <= pageLimit + 1) {
     for (let i = 1; i <= Math.min(totalPages, pageLimit * 2 + 1); i++) {
@@ -254,18 +248,16 @@ const DatabaseByGrade = () => {
     }
   }
 
-  return (
-    <Container>
-      <h2>Gunpla Database - Grade: {grade}</h2>
-      <input
-        type="text"
-        placeholder="Search by model name or series..."
-        onChange={(e) => handleSearch(e)}
-      ></input>
-      <div className="row justify-content-center model-row">
-        {gunplaDisplay}
-      </div>
-      <div className="pagination-container d-flex justify-content-center">
+  const searchBar = (
+    <input
+      type="text"
+      placeholder="Search by model name or series..."
+      onChange={(e) => handleSearch(e)}
+    />
+  );
+
+  const paginationComponent = totalPages > 1 || hasSearchResults ? (
+    <div className="pagination-container d-flex justify-content-center">
         <Pagination>
           <Pagination.First
             onClick={() => handlePageChange(1)}
@@ -286,12 +278,28 @@ const DatabaseByGrade = () => {
           />
         </Pagination>
       </div>
-      <CommentModal
-        selectedGunpla={selectedGunpla}
-        showModal={showModal}
-        onCloseModal={handleCloseModal}
-      />
-    </Container>
+  ) : null;
+
+  return (
+    <Container>
+    <h2>Gunpla Database - Grade: {grade}</h2>
+    {searchBar}
+    {hasSearchResults ? (
+      <>
+        <div className="row justify-content-center model-row">
+          {gunplaDisplay}
+        </div>
+        {paginationComponent}
+      </>
+    ) : (
+      <p>{totalPages === 0 ? "No gunpla could be found." : "No search results found."}</p>
+    )}
+    <CommentModal
+      selectedGunpla={selectedGunpla}
+      showModal={showModal}
+      onCloseModal={handleCloseModal}
+    />
+  </Container>
   );
 };
 

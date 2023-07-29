@@ -5,16 +5,13 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
 
+
 const Profile = () => {
   const { user, setUser } = useContext(UserContext);
   const [activeSection, setActiveSection] = useState("collection");
-  const [viewWishlist, setViewWishlist] = useState(false);
   const [userCollection, setUserCollection] = useState([]);
   const [userWishlists, setUserWishlists] = useState([]);
   const [edit, setEdit] = useState(false);
-  const [showSkillLevelForm, setShowSkillLevelForm] = useState(false);
-  const [selectedSkillLevel, setSelectedSkillLevel] = useState("");
-  const [collectedGunplasByGrade, setCollectedGunplasByGrade] = useState([]);
   const skillLevelOptions = ["Beginner", "Intermediate", "Advanced"];
   const [initialValues, setInitialValues] = useState(null);
 
@@ -24,7 +21,6 @@ const Profile = () => {
     if (user) {
       const initialData = {
         bio: user.bio || "",
-        instagramLink: user.instagramLink || "",
         skillLevel: user.skillLevel || "",
       };
       setInitialValues(initialData);
@@ -33,7 +29,6 @@ const Profile = () => {
 
   const validationSchema = Yup.object({
     bio: Yup.string().required("Please fill out your bio"),
-    instagramLink: Yup.string().url("Invalid Instagram link"),
     skillLevel: Yup.string().required("Skill level is required"),
   });
 
@@ -127,13 +122,20 @@ const Profile = () => {
         setUserCollection((prevState) =>
           prevState.filter((collection) => collection.gunpla.id !== gunpla_id)
         );
-        fetch(`/api/${user.username}/wishlists`)
+        fetch(`/${user.username}/wishlists`)
           .then((response) => response.json())
           .then((data) => {
             setUserWishlists(data);
           });
       });
   };
+
+  const formatDate = (dateString) => {
+    const dateObject = new Date(dateString);
+    const options = { month: "long", day: "numeric", year: "numeric" };
+    return dateObject.toLocaleDateString("en-US", options);
+  };
+
 
   const renderCollections = () => {
     if (!searchedCollectionGunplas || userCollection.length === 0) {
@@ -197,7 +199,7 @@ const Profile = () => {
   };
 
   const handleWishlistDelete = (gunpla_id) => {
-    fetch("/api/wishlist/remove", {
+    fetch("/wishlist/remove", {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -215,7 +217,7 @@ const Profile = () => {
   };
 
   const handleMoveToCollection = (gunpla_id) => {
-    fetch("/api/wishlist/move-to-collection", {
+    fetch("/wishlist/move-to-collection", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -229,7 +231,7 @@ const Profile = () => {
         setUserWishlists((prevState) =>
           prevState.filter((wishlist) => wishlist.gunpla.id !== gunpla_id)
         );
-        fetch(`/api/${user.username}/collections`)
+        fetch(`/${user.username}/collections`)
           .then((response) => response.json())
           .then((data) => {
             setUserCollection(data);
@@ -298,11 +300,11 @@ const Profile = () => {
 
   const renderSkillLevelStars = () => {
     if (user.skill_level === "Beginner") {
-      return <span>🥉</span>;
+      return <span>Beginner</span>;
     } else if (user.skill_level === "Intermediate") {
-      return <span>🥈</span>;
+      return <span>Intermediate</span>;
     } else if (user.skill_level === "Advanced") {
-      return <span>🥇</span>;
+      return <span>Advanced</span>;
     } else {
       return null;
     }
@@ -351,11 +353,10 @@ const Profile = () => {
   const handleSubmit = (values, { setSubmitting, setErrors }) => {
     const data = {
       bio: values.bio,
-      instagram_link: values.instagramLink,
       skill_level: values.skillLevel,
     };
 
-    fetch(`/api/users/${user.username}/profile`, {
+    fetch(`/users/${user.username}/profile`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -370,7 +371,6 @@ const Profile = () => {
         }
       })
       .then((updatedUser) => {
-        console.log(updatedUser);
         updateUser(updatedUser);
         setSubmitting(false);
         setEdit(false);
@@ -402,10 +402,9 @@ const Profile = () => {
             <Col md={8}>
               <h2>{user.username}</h2>{" "}
               <button onClick={() => setEdit(true)}>Edit Profile</button>
-              <p>Member since: {user.created_at}</p>
+              <p>Member since: {formatDate(user.created_at)}</p>
               {!edit ? (
                 <>
-                  <p>Instagram: {user.instagramLink}</p>
                   <p>Skill Level: {renderSkillLevelStars()}</p>
                   <p>Bio: {user.bio}</p>
                 </>
@@ -416,20 +415,6 @@ const Profile = () => {
                   onSubmit={handleSubmit}
                 >
                   <Form>
-                    <div className="form-group">
-                      <label htmlFor="instagramLink">Instagram:</label>
-                      <Field
-                        type="text"
-                        name="instagramLink"
-                        id="instagramLink"
-                        className="form-control form-field"
-                      />
-                      <ErrorMessage
-                        name="instagramLink"
-                        component="div"
-                        className="error-message"
-                      />
-                    </div>
                     <div className="form-group">
                       <label htmlFor="skillLevel">Skill Level:</label>
                       <Field

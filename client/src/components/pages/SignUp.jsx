@@ -5,10 +5,11 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { UserContext } from "../../context/UserContext";
 
-const Signup = ({ updateUser }) => {
+const Signup = () => {
   const { user, setUser } = useContext(UserContext);
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
-  console.log(user);
+
   const defaultProfilePics = [
     "https://raw.githubusercontent.com/Evan-Roberts-808/Gunpla-Pal/main/.github/images/profile_pics/Amuro.png",
     "https://raw.githubusercontent.com/Evan-Roberts-808/Gunpla-Pal/main/.github/images/profile_pics/Char.png",
@@ -25,6 +26,8 @@ const Signup = ({ updateUser }) => {
   };
 
   const validationSchema = Yup.object({
+    name: Yup.string().required("Name is required"),
+    email: Yup.string().required("Email is required"),
     username: Yup.string().required("Username is required"),
     password: Yup.string().required("Password is required"),
     confirmPassword: Yup.string()
@@ -48,12 +51,21 @@ const Signup = ({ updateUser }) => {
       },
       body: JSON.stringify(userData),
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Username or email is already in use");
+        }
+      })
       .then((data) => {
         setUser(data);
         navigate("/database");
       })
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        setErrorMessage(error.message);
+        setSubmitting(false);
+      });
   };
 
   return (
@@ -69,13 +81,13 @@ const Signup = ({ updateUser }) => {
         <Col md={8}>
           <Row>
             <Col>
-              <h2>Signup</h2>
+              <h2 className="title">Signup</h2>
               <Formik
                 initialValues={initialValues}
                 validationSchema={validationSchema}
                 onSubmit={handleSubmit}
               >
-                <Form>
+                <Form id="signup-form">
                   <div className="form-group">
                     <label htmlFor="name">Name:</label>
                     <Field
@@ -146,12 +158,15 @@ const Signup = ({ updateUser }) => {
                       className="error-message"
                     />
                   </div>
+                  {errorMessage && (
+                    <div className="error-message">{errorMessage}</div>
+                  )}
                   <button type="submit" className="btn btn-primary signup-button">
                     Submit
                   </button>
                 </Form>
               </Formik>
-              <p>Already a user?<span style={{"cursor": "pointer", "marginLeft":"10px"}} onClick={() => navigate('/login')}>Sign In</span></p>
+              <p className="notification">Already a user?<span style={{"cursor": "pointer", "margin-left":"10px"}} onClick={() => navigate('/login')}>Sign In</span></p>
             </Col>
           </Row>
         </Col>

@@ -8,6 +8,7 @@ import * as Yup from "yup";
 const SignIn = () => {
   const { setUser } = useContext(UserContext);
   const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState("");
 
   const initialValues = {
     username: "",
@@ -31,12 +32,25 @@ const SignIn = () => {
       },
       body: JSON.stringify(userData),
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else if (response.status === 401) {
+          throw new Error("Invalid username or password");
+        } else if (response.status === 404) {
+          throw new Error("User not found");
+        } else {
+          throw new Error("Error logging in");
+        }
+      })
       .then((data) => {
         setUser(data);
         navigate("/database");
       })
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        console.error(error);
+        setErrorMessage(error.message);
+      });
   };
 
   return (
@@ -52,13 +66,13 @@ const SignIn = () => {
         <Col md={8}>
           <Row>
             <Col>
-              <h2>Sign In</h2>
+              <h2 className="title">Sign In</h2>
               <Formik
                 initialValues={initialValues}
                 validationSchema={validationSchema}
                 onSubmit={handleSubmit}
               >
-                <Form>
+                <Form id="signin-form">
                   <div className="form-group">
                     <label htmlFor="username">Username: </label>
                     <Field
@@ -79,12 +93,15 @@ const SignIn = () => {
                     />
                     <ErrorMessage name="password" component="div" />
                   </div>
+                  {errorMessage && (
+                    <div className="error-message">{errorMessage}</div>
+                  )}
                   <button type="submit" className="btn btn-primary signup-button">
                     Submit
                   </button>
                 </Form>
               </Formik>
-              <p>Don't have an account?<span style={{"cursor": "pointer", "marginLeft":"10px"}} onClick={() => navigate('/signup')}>Sign Up</span></p>
+              <p className="notification">Don't have an account?<span style={{"cursor": "pointer", "margin-left":"10px"}} onClick={() => navigate('/signup')}>Sign Up</span></p>
             </Col>
           </Row>
         </Col>

@@ -277,3 +277,32 @@ footer {
   footer p {
     margin-bottom: 0;
   }
+
+  /* Media Queries */
+
+  @media (max-width: 578px) {
+    .navbar-brand {
+        margin-right: unset;
+    }
+
+    .comment-modal {
+        height: auto;
+    }
+
+    .signup-image {
+        display: none;
+    }
+
+    #signup-form, .title, .notification, #signin-form {
+        margin-left: 1rem;
+    }
+
+    .form-field {
+        width: 60%;
+    }
+
+    .profile-pic {
+        width: 20%;
+    }
+
+  }

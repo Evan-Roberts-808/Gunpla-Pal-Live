@@ -6,7 +6,7 @@ import { UserContext } from "../../context/UserContext";
 const Database = () => {
   const [gunplas, setGunplas] = useState([]);
   const { user } = useContext(UserContext);
-  console.log(user);
+
   return (
     <Container>
       <h2>Gunpla Database</h2>

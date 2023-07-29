@@ -11,7 +11,6 @@ const CommentModal = ({ showModal, onCloseModal, selectedGunpla }) => {
   const { user } = useContext(UserContext);
   const formRef = useRef(null);
   const [comments, setComments] = useState([]);
-  console.log(comments);
 
   useEffect(() => {
     fetch(`/comments/${selectedGunpla.id}`)
@@ -48,7 +47,6 @@ const CommentModal = ({ showModal, onCloseModal, selectedGunpla }) => {
     })
       .then((resp) => resp.json())
       .then((data) => {
-        console.log(data);
         const newComment = data;
         setComments((prevComments) => [...prevComments, newComment]);
         resetForm();
